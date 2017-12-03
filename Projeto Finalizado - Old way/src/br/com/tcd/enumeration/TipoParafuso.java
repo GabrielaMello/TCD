@@ -11,26 +11,28 @@ package br.com.tcd.enumeration;
  */
 public enum TipoParafuso {
 
-	ESCOLHA_TIPO_PARAFUSO("Escolha o Tipo de Parafuso", 0d, 0d),
-	M10("M10", 1d, 58d),
-	M12("M12", 1.2, 84.3),
-	M16("M16", 1.6, 157d),
-	M20("M20", 2d, 245d),
-	M22("M22", 2.2, 303d),
-	M24("M24", 2.4, 353d),
-	M27("M27", 2.7, 459d),
-	M30("M30", 3d, 561d),
-	M33("M33", 3.3, 694d),
-	M36("M36", 3.6, 817d);
+	ESCOLHA_TIPO_PARAFUSO("Escolha o Tipo de Parafuso", 0d, 0d,0d),
+	M10("M10", 10.0, 58.0, 1.9078),
+	M12("M12", 12.0, 84.3, 1.7391),
+	M16("M16", 16.0, 157.0, 1.5166),
+	M20("M20", 20.0, 245.0, 1.3866),
+	M22("M22", 22.0, 303.0, 1.3338),
+	M24("M24", 24.0, 353.0, 1.2963),
+	M27("M27", 27.0, 459.0, 1.25),
+	M30("M30", 30.0, 561.0, 1.2125),
+	M33("M33", 33.0, 694.0, 1.1805),
+	M36("M36", 36.0, 817.0, 1.1567);
 	
 	private String nome;
 	private Double DiametroParafuso;
-	private Double ComprimentoParafuso;
+	private Double AreaParafuso;
+        private Double Alfa;
 
-	private TipoParafuso(String nome, Double DiametroParafuso, Double ComprimentoParafuso) {
+	private TipoParafuso(String nome, Double DiametroParafuso, Double AreaParafuso, Double Alfa) {
 		this.nome = nome;
 		this.DiametroParafuso = DiametroParafuso;
-		this.ComprimentoParafuso = ComprimentoParafuso;
+		this.AreaParafuso = AreaParafuso;
+                this.Alfa = Alfa;
 
 	}
 
@@ -38,13 +40,17 @@ public enum TipoParafuso {
 		return this.DiametroParafuso;
 	}
 
-	public Double getComprimento() {
-		return this.ComprimentoParafuso;
+	public Double getArea() {
+		return this.AreaParafuso;
 	}
 
 	public String getNome() {
 		return nome;
 	}
+        
+        public Double getAlfa(){
+            return Alfa;
+        }
 
 	@Override
 	public String toString() {

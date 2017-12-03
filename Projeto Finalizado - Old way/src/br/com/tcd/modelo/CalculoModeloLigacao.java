@@ -5,6 +5,7 @@ O * To change this license header, choose License Headers in Project Properties.
  */
 package br.com.tcd.modelo;
 
+import br.com.tcd.controller.DuasSecoesChapaFinaLateralController;
 import br.com.tcd.controller.DuasSecoesChapaCentralController;
 import br.com.tcd.controller.DuasSecoesChapaGrossaLateralController;
 import br.com.tcd.controller.DuasSecoesCorteInclinadaController;
@@ -27,7 +28,8 @@ public class CalculoModeloLigacao {
 
 	private double d = 0, c = 0, d1 = 0, tp = 0, d2 = 0, forcaaplicada = 0, fe0d1 = 0, fe0d2 = 0, fe90d1 = 0, fe90d2 = 0, beta = 0, valorFaxrk = 0, valorFaxrkPrego = 0, valorFaxrkFinal = 0, kmod1 = 0,
 	        kmod2 = 0, kmod3 = 0, alfa = 0, Rdmin = 0, Rdlig = 0, rd1 = 0, rd2 = 0, rd3 = 0, rd4 = 0, rd5 = 0, rd6 = 0, Rvd = 0, npregos = 0, nparafusos = 0, fc0k1 = 0, fc0k2 = 0, fv0k1 = 0,
-	        fv0k2 = 0, ec0m1 = 0, ec0m2 = 0, t1 = 0, t2 = 0, falfa1 = 0, falfa2 = 0, angulo = 0, arruela = 0, myd = 0, fvkmin = 0;
+	        fv0k2 = 0, ec0m1 = 0, ec0m2 = 0, t1 = 0, t2 = 0, falfa1 = 0, falfa2 = 0, angulo = 0, arruela = 0, myd = 0, fvkmin = 0, chapaFyk = 0, chapaFuk = 0, fvk1 = 0, fvk2 = 0, fvk3 = 0, fvk4 = 0, 
+                fvk5 = 0, fvk6 = 0, fvk7 = 0, fvk8 = 0, fvk9 = 0, fvk10 = 0, fvk11 = 0, fvk12 = 0;
 
 	private int fyd = 0, fyk = 0, nsecoes = 0, fuk = 0, npr = 0;
 
@@ -60,14 +62,7 @@ public class CalculoModeloLigacao {
 		this.kmod1 = modeloLigacao.getKmod1().getValor();
 		this.kmod2 = modeloLigacao.getKmod2().getValor();
 		this.kmod3 = modeloLigacao.getKmod3().getValor();
-		this.npr = modeloLigacao.getConectores().getQuantidadePrego().getQuantidadePregos();
-
-		if(npr > 8) {
-			npregos = (8.0 + ((2.0 / 3.0) * (npr - 8.0)));
-		} else {
-			npregos = npr;
-		}
-
+		this.npregos = modeloLigacao.getConectores().getQuantidadePrego().getQuantidadePregos();
 		this.angulo = modeloLigacao.getAngulo().getValorRad();
 		this.d = modeloLigacao.getConectores().getTipoPrego().getDiametro();
 		this.c = modeloLigacao.getConectores().getTipoPrego().getComprimento();
@@ -113,25 +108,37 @@ public class CalculoModeloLigacao {
 
 			// Verifica o menor Rd
 			Rdmin = rd1;
+                        tipo = "Embutimento do pino metálico no elemento 1 de madeira.";
+			imagemFalha = "1.1P.png";
 
 			if(rd2 < Rdmin || rd2 == Rdmin) {
 				Rdmin = rd2;
+                                tipo = "Embutimento do pino metálico no elemento 2 de madeira.";
+				imagemFalha = "1.2P.png";
 
 			}
 			if(rd3 < Rdmin) {
 				Rdmin = rd3;
+                                tipo = "Embutimento do pino metálico nas duas peças, devido ao giro do pino metálico.";
+				imagemFalha = "1.3P.png";
 
 			}
 			if(rd4 < Rdmin) {
 				Rdmin = rd4;
+                                tipo = "Flexão do pino metálico com ocorrência de rótula plástica no elemento 2.";
+				imagemFalha = "1.4P.png";
 
 			}
 			if(rd5 < Rdmin) {
 				Rdmin = rd5;
+                                tipo = "Flexão do pino metálico com ocorrência de rótula plástica no elemento 1.";
+				imagemFalha = "1.5P.png";
 
 			}
 			if(rd6 < Rdmin) {
 				Rdmin = rd6;
+                                tipo = "Flexão do pino metálico com ocorrência de rótula plástica nos dois elementos.";
+				imagemFalha = "1.6P.png";
 
 			}
 
@@ -164,12 +171,14 @@ public class CalculoModeloLigacao {
 			// Valor utilizado de força
 			if(IncSim1) {
 				falfa2 = ((fe0d2 * fe90d2) / ((fe0d2 * (Math.pow(Math.sin(angulo), 2))) + (fe90d2 * (Math.pow(Math.cos(angulo), 2)))));
-				falfa1 = fe0d1;
+				fe0d2 = falfa2;//gambiarra para printar valor certo
+                                falfa1 = fe0d1;
 
 			}
 			if(IncSim2) {
 				falfa1 = ((fe0d1 * fe90d1) / ((fe0d1 * (Math.pow(Math.sin(angulo), 2))) + (fe90d1 * (Math.pow(Math.cos(angulo), 2)))));
-				falfa2 = fe0d2;
+				fe0d1 = falfa1;//gambiarra para printar valor certo
+                                falfa2 = fe0d2; 
 
 			}
 			beta = falfa2 / falfa1;
@@ -192,19 +201,23 @@ public class CalculoModeloLigacao {
 				Rdmin = rd2;
 				tipo = "Embutimento do pino metálico no elemento 2 de madeira.";
 				imagemFalha = "1.2P.png";
-			} else if(rd3 < Rdmin) {
+			}
+                        if(rd3 < Rdmin) {
 				Rdmin = rd3;
 				tipo = "Embutimento do pino metálico nas duas peças, devido ao giro do pino metálico.";
 				imagemFalha = "1.3P.png";
-			} else if(rd4 < Rdmin) {
+			}
+                        if(rd4 < Rdmin) {
 				Rdmin = rd4;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica no elemento 2.";
 				imagemFalha = "1.4P.png";
-			} else if(rd5 < Rdmin) {
+			}
+                        if(rd5 < Rdmin) {
 				Rdmin = rd5;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica no elemento 1.";
 				imagemFalha = "1.5P.png";
-			} else if(rd6 < Rdmin) {
+			}
+                        if(rd6 < Rdmin) {
 				Rdmin = rd6;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica nos dois elementos.";
 				imagemFalha = "1.6P.png";
@@ -214,7 +227,9 @@ public class CalculoModeloLigacao {
 			Rdlig = npregos * nsecoes * Rdmin;
 			Rvd = ((Rdlig * kmod1 * kmod2 * kmod3) / 1.4);
 
-		} else if((modeloLigacao == ModeloLigacao.CORTE_SIMPLES || modeloLigacao == ModeloLigacao.DUPLO_CORTE_SIMPLES)
+		} 
+                
+                if((modeloLigacao == ModeloLigacao.CORTE_SIMPLES || modeloLigacao == ModeloLigacao.DUPLO_CORTE_SIMPLES)
 		          && modeloLigacao.getAngulo().getTipoAngulo() == Angulo.TipoAngulo.PERPENDICULAR) {
 			UmaSecaoCortePerpendicularController resultado = new UmaSecaoCortePerpendicularController();
 
@@ -239,11 +254,13 @@ public class CalculoModeloLigacao {
 			if(IncSim1) {
 				falfa1 = fe0d1;
 				falfa2 = fe90d2;
+                                fe0d2 = falfa2;//gambiarra para printar valor certo
 
 			}
 			if(IncSim2) {
 				falfa2 = fe0d2;
 				falfa1 = fe90d1;
+                                fe0d1 = falfa1; //gambiarra para printar valor certo
 
 			}
 			beta = falfa2 / falfa1;
@@ -267,19 +284,23 @@ public class CalculoModeloLigacao {
 				Rdmin = rd2;
 				tipo = "Embutimento do pino metálico no elemento 2 de madeira.";
 				imagemFalha = "1.2P.png";
-			} else if(rd3 < Rdmin) {
+			}
+                        if(rd3 < Rdmin) {
 				Rdmin = rd3;
 				tipo = "Embutimento do pino metálico nas duas peças, devido ao giro do pino metálico.";
 				imagemFalha = "1.3P.png";
-			} else if(rd4 < Rdmin) {
+			}
+                        if(rd4 < Rdmin) {
 				Rdmin = rd4;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica no elemento 2.";
 				imagemFalha = "1.4P.png";
-			} else if(rd5 < Rdmin) {
+			}
+                        if(rd5 < Rdmin) {
 				Rdmin = rd5;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica no elemento 1.";
 				imagemFalha = "1.5P.png";
-			} else if(rd6 < Rdmin) {
+			}
+                        if(rd6 < Rdmin) {
 				Rdmin = rd6;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica nos dois elementos.";
 				imagemFalha = "1.6P.png";
@@ -328,11 +349,13 @@ public class CalculoModeloLigacao {
 				Rdmin = rd2;
 				tipo = "Embutimento do pino metálico no elemento 2 de madeira.";
 				imagemFalha = "2.2P.png";
-			} else if(rd3 < Rdmin) {
+			}
+                        if(rd3 < Rdmin) {
 				Rdmin = rd3;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica no elemento 2.";
 				imagemFalha = "2.3P.png";
-			} else if(rd4 < Rdmin) {
+			}
+                        if(rd4 < Rdmin) {
 				Rdmin = rd4;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica nos dois elementos.";
 				imagemFalha = "2.4P.png";
@@ -368,12 +391,14 @@ public class CalculoModeloLigacao {
 			// Valor utilizado de força
 			if(IncSim1) {
 				falfa2 = ((fe0d2 * fe90d2) / ((fe0d2 * (Math.pow(Math.sin(angulo), 2))) + (fe90d2 * (Math.pow(Math.cos(angulo), 2)))));
-				falfa1 = fe0d1;
+				fe0d2 = falfa2;//gambiarra para printar valor certo
+                                falfa1 = fe0d1;
 
 			}
 			if(IncSim2) {
 				falfa1 = ((fe0d1 * fe90d1) / ((fe0d1 * (Math.pow(Math.sin(angulo), 2))) + (fe90d1 * (Math.pow(Math.cos(angulo), 2)))));
-				falfa2 = fe0d2;
+				fe0d1 = falfa1;//gambiarra para printar valor certo
+                                falfa2 = fe0d2;
 
 			}
 			beta = falfa2 / falfa1;
@@ -395,11 +420,13 @@ public class CalculoModeloLigacao {
 				Rdmin = rd2;
 				tipo = "Embutimento do pino metálico no elemento 2 de madeira.";
 				imagemFalha = "2.2P.png";
-			} else if(rd3 < Rdmin) {
+			}
+                        if(rd3 < Rdmin) {
 				Rdmin = rd3;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica no elemento 2.";
 				imagemFalha = "2.3P.png";
-			} else if(rd4 < Rdmin) {
+			}
+                        if(rd4 < Rdmin) {
 				Rdmin = rd4;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica nos dois elementos.";
 				imagemFalha = "2.4P.png";
@@ -436,11 +463,13 @@ public class CalculoModeloLigacao {
 			if(IncSim1) {
 				falfa1 = fe0d1;
 				falfa2 = fe90d2;
+                                fe0d2 = falfa2;//gambiarra para printar valor certo
 
 			}
 			if(IncSim2) {
 				falfa2 = fe0d2;
 				falfa1 = fe90d1;
+                                fe0d1 = falfa1;//gambiarra para printar o valor certo
 
 			}
 			beta = falfa2 / falfa1;
@@ -462,11 +491,13 @@ public class CalculoModeloLigacao {
 				Rdmin = rd2;
 				tipo = "Embutimento do pino metálico no elemento 2 de madeira.";
 				imagemFalha = "2.2P.png";
-			} else if(rd3 < Rdmin) {
+			}
+                        if(rd3 < Rdmin) {
 				Rdmin = rd3;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica no elemento 2.";
 				imagemFalha = "2.3P.png";
-			} else if(rd4 < Rdmin) {
+			}
+                        if(rd4 < Rdmin) {
 				Rdmin = rd4;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica nos dois elementos.";
 				imagemFalha = "2.4P.png";
@@ -491,40 +522,21 @@ public class CalculoModeloLigacao {
 		this.kmod1 = modeloLigacao.getKmod1().getValor();
 		this.kmod2 = modeloLigacao.getKmod2().getValor();
 		this.kmod3 = modeloLigacao.getKmod3().getValor();
-		this.npr = modeloLigacao.getConectores().getQuantidadeParafuso().getQtd();
-
-		if(npr > 8) {
-			nparafusos = (8.0 + ((2.0 / 3.0) * (npr - 8.0)));
-		} else {
-			nparafusos = npr;
-		}
-
+		this.nparafusos = modeloLigacao.getConectores().getQuantidadeParafuso().getQtd();
 		this.angulo = modeloLigacao.getAngulo().getValorRad();
 		this.d = modeloLigacao.getConectores().getTipoParafuso().getDiametro();
-		this.c = modeloLigacao.getConectores().getTipoParafuso().getComprimento();
 		this.fyk = modeloLigacao.getConectores().getClasseAcoParafuso().getFyk();
 		this.fuk = modeloLigacao.getConectores().getClasseAcoParafuso().getFuk();
-		this.alfa = 2.5;
+		this.alfa = modeloLigacao.getConectores().getTipoParafuso().getAlfa();
 		this.beta = fc0k2 / fc0k1;
 		this.fe0d1 = fc0k1;
 		this.fe0d2 = fc0k2;
 		this.fe90d1 = (0.25 * fe0d1 * alfa);
 		this.fe90d2 = (0.25 * fe0d2 * alfa);
+                this.d1 = modeloLigacao.getConectores().getTipoArruela().getD1();
+		this.d2 = modeloLigacao.getConectores().getTipoArruela().getD2();
 
-		//Entradas madeiras
-		double falfa1 = 0.0;
-		double falfa2 = 0.0;
-
-		//Entradas Parafusos
-		d1 = modeloLigacao.getConectores().getTipoArruela().getD1();
-		d2 = modeloLigacao.getConectores().getTipoArruela().getD2();
-
-		beta = fc0k2 / fc0k1;
-		fe0d1 = fc0k1;
-		fe0d2 = fc0k2;
-		double fe90d1 = (0.25 * fe0d1 * alfa);
-		double fe90d2 = (0.25 * fe0d2 * alfa);
-
+                //CÁLCULO PARA CORTE SIMPLES PARALELO
 		if(modeloLigacao == ModeloLigacao.CORTE_SIMPLES && modeloLigacao.getAngulo().getTipoAngulo() == Angulo.TipoAngulo.PARALELO) {
 			UmaSecaoCorteParaleloController resultado = new UmaSecaoCorteParaleloController();//Pegar os valores das outras classes
 
@@ -541,43 +553,50 @@ public class CalculoModeloLigacao {
 				valorFaxrkFinal = valorFaxrkPrego;
 			}
 
-			double Myd = resultado.ValorMyd(fuk, d);
+			myd = resultado.ValorMyd(fuk, d);
 			rd1 = resultado.EmbMenorPeca(fe0d1, t1, d);
 			rd2 = resultado.EmbMaiorPeca(fe0d1, t2, d, beta);
 			rd3 = resultado.EmbDuasPecas(fe0d1, d, t1, t2, beta, valorFaxrk, valorFaxrkPrego);
-			rd4 = resultado.DeformPinoMaiorPeca(fe0d1, t1, d, beta, Myd, valorFaxrk, valorFaxrkPrego);
-			rd5 = resultado.DeformPinoMenorPeca(fe0d1, t2, d, beta, Myd, valorFaxrk, valorFaxrkPrego);
-			rd6 = resultado.DeformPinoNasDuas(beta, Myd, fe0d1, d, valorFaxrk, valorFaxrkPrego);
+			rd4 = resultado.DeformPinoMaiorPeca(fe0d1, t1, d, beta, myd, valorFaxrk, valorFaxrkPrego);
+			rd5 = resultado.DeformPinoMenorPeca(fe0d1, t2, d, beta, myd, valorFaxrk, valorFaxrkPrego);
+			rd6 = resultado.DeformPinoNasDuas(beta, myd, fe0d1, d, valorFaxrk, valorFaxrkPrego);
 
 			Rdmin = rd1;
 			tipo = "Embutimento do pino metálico no elemento 1 de madeira.";
 			imagemFalha = "1.1.png";
+                        
 			if(rd2 < Rdmin || rd2 == Rdmin) {
 				Rdmin = rd2;
 				tipo = "Embutimento do pino metálico no elemento 2 de madeira.";
 				imagemFalha = "1.2.png";
-			} else if(rd3 < Rdmin) {
+			}
+                        if(rd3 < Rdmin) {
 				Rdmin = rd3;
 				tipo = "Embutimento do pino metálico nos dois elementos de madeira";
 				imagemFalha = "1.3.png";
-			} else if(rd4 < Rdmin) {
+			}
+                        if(rd4 < Rdmin) {
 				Rdmin = rd4;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica no elemento 2 de madeira";
 				imagemFalha = "1.4.png";
-			} else if(rd5 < Rdmin) {
+			}
+                        if(rd5 < Rdmin) {
 				Rdmin = rd5;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica no elemento 1 de madeira.";
 				imagemFalha = "1.5.png";
-			} else if(rd6 < Rdmin) {
+			}
+                        if(rd6 < Rdmin) {
 				Rdmin = rd6;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica nos dois elementos de madeira.";
 				imagemFalha = "1.6.png";
 			}
 
 			//Calcular o valor total da ligação
-			Rdlig = nparafusos * 1 * Rdmin;
+			Rdlig = nparafusos * nsecoes* Rdmin;
 			Rvd = ((Rdlig * kmod1 * kmod2 * kmod3) / 1.4);
-		} else if(modeloLigacao == ModeloLigacao.CORTE_SIMPLES && modeloLigacao.getAngulo().getTipoAngulo() == Angulo.TipoAngulo.INCLINADO) {
+                        
+                //CÁLCULO PARA CORTE SIMPLES E INCLINADO        
+		}if(modeloLigacao == ModeloLigacao.CORTE_SIMPLES && modeloLigacao.getAngulo().getTipoAngulo() == Angulo.TipoAngulo.INCLINADO) {
 			UmaSecaoCorteInclinadaController resultado = new UmaSecaoCorteInclinadaController();//Pegar os valores das outras classes
 
 			if(m) {
@@ -596,52 +615,65 @@ public class CalculoModeloLigacao {
 			//valor utilizado de força
 			if(IncSim1) {
 				falfa2 = ((fe0d2 * fe90d2) / ((fe0d2 * (Math.pow(Math.sin(angulo), 2))) + (fe90d2 * (Math.pow(Math.cos(angulo), 2)))));
-				falfa1 = fe0d1;
+				fe0d2 = falfa2;//gambiarra para printar certo
+                                falfa1 = fe0d1;
+                                
 			}
 			if(IncSim2) {
 				falfa1 = ((fe0d1 * fe90d1) / ((fe0d1 * (Math.pow(Math.sin(angulo), 2))) + (fe90d1 * (Math.pow(Math.cos(angulo), 2)))));
-				falfa2 = fe0d2;
+				fe0d1 = falfa1;//gambiarra para printar valor certo
+                                falfa2 = fe0d2;
 			}
 
 			beta = falfa2 / falfa1;
 
-			double Myd = resultado.ValorMyd(fuk, d);
+			myd = resultado.ValorMyd(fuk, d);
 			rd1 = resultado.EmbMenorPeca(falfa1, t1, d);
 			rd2 = resultado.EmbMaiorPeca(falfa1, t2, d, beta);
 			rd3 = resultado.EmbDuasPecas(falfa1, d, t1, t2, beta, valorFaxrk, valorFaxrkPrego);
-			rd4 = resultado.DeformPinoMaiorPeca(falfa1, t1, d, beta, Myd, valorFaxrk, valorFaxrkPrego);
-			rd5 = resultado.DeformPinoMenorPeca(falfa1, t2, d, beta, Myd, valorFaxrk, valorFaxrkPrego);
-			rd6 = resultado.DeformPinoNasDuas(beta, Myd, falfa1, d, valorFaxrk, valorFaxrkPrego);
+			rd4 = resultado.DeformPinoMaiorPeca(falfa1, t1, d, beta, myd, valorFaxrk, valorFaxrkPrego);
+			rd5 = resultado.DeformPinoMenorPeca(falfa1, t2, d, beta, myd, valorFaxrk, valorFaxrkPrego);
+			rd6 = resultado.DeformPinoNasDuas(beta, myd, falfa1, d, valorFaxrk, valorFaxrkPrego);
 
 			Rdmin = rd1;
 			tipo = "Embutimento do pino metálico no elemento 1 de madeira.";
 			imagemFalha = "1.1.png";
+                        
 			if(rd2 < Rdmin || rd2 == Rdmin) {
 				Rdmin = rd2;
 				tipo = "Embutimento do pino metálico no elemento 2 de madeira.";
 				imagemFalha = "1.2.png";
-			} else if(rd3 < Rdmin) {
+			}
+                        if(rd3 < Rdmin) {
 				Rdmin = rd3;
 				tipo = "Embutimento do pino metálico nos dois elementos de madeira.";
 				imagemFalha = "1.3.png";
-			} else if(rd4 < Rdmin) {
+			}
+                        if(rd4 < Rdmin) {
 				Rdmin = rd4;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica no elemento 2 de madeira.";
 				imagemFalha = "1.4.png";
-			} else if(rd5 < Rdmin) {
+			}
+                        if(rd5 < Rdmin) {
 				Rdmin = rd5;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica no elemento 1 de madeira.";
 				imagemFalha = "1.5.png";
-			} else if(rd6 < Rdmin) {
+			}
+                        if(rd6 < Rdmin) {
 				Rdmin = rd6;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica nos dois elementos de madeira.";
 				imagemFalha = "1.6.png";
 			}
 
 			//Calcular o valor total da ligação
-			Rdlig = nparafusos * 1 * Rdmin;
+			Rdlig = nparafusos * nsecoes* Rdmin;
 			Rvd = ((Rdlig * kmod1 * kmod2 * kmod3) / 1.4);
-		} else if(modeloLigacao == ModeloLigacao.CORTE_SIMPLES && modeloLigacao.getAngulo().getTipoAngulo() == Angulo.TipoAngulo.PERPENDICULAR) {
+                        
+                 
+		}
+                
+                //CÁLCULO CORTE SIMPLES E PERPENDICULAR
+                if(modeloLigacao == ModeloLigacao.CORTE_SIMPLES && modeloLigacao.getAngulo().getTipoAngulo() == Angulo.TipoAngulo.PERPENDICULAR) {
 			UmaSecaoCortePerpendicularController resultado = new UmaSecaoCortePerpendicularController();//Pegar os valores das outras classes
 
 			if(m) {
@@ -660,51 +692,61 @@ public class CalculoModeloLigacao {
 			if(IncSim1) {
 				falfa1 = fe0d1;
 				falfa2 = fe90d2;
+                                fe0d2 = falfa2;//gambiarra para printar valor certo
 			}
 			if(IncSim2) {
 				falfa2 = fe0d2;
 				falfa1 = fe90d1;
+                                fe0d1 = falfa1;//gambiarra para printar valor certo
 			}
 
 			beta = falfa2 / falfa1;
 
-			double Myd = resultado.ValorMyd(fuk, d);
+			myd = resultado.ValorMyd(fuk, d);
 			rd1 = resultado.EmbMenorPeca(falfa1, t1, d);
 			rd2 = resultado.EmbMaiorPeca(falfa1, t2, d, beta);
 			rd3 = resultado.EmbDuasPecas(falfa1, d, t1, t2, beta, valorFaxrk, valorFaxrkPrego);
-			rd4 = resultado.DeformPinoMaiorPeca(falfa1, t1, d, beta, Myd, valorFaxrk, valorFaxrkPrego);
-			rd5 = resultado.DeformPinoMenorPeca(falfa1, t2, d, beta, Myd, valorFaxrk, valorFaxrkPrego);
-			rd6 = resultado.DeformPinoNasDuas(beta, Myd, falfa1, d, valorFaxrk, valorFaxrkPrego);
+			rd4 = resultado.DeformPinoMaiorPeca(falfa1, t1, d, beta, myd, valorFaxrk, valorFaxrkPrego);
+			rd5 = resultado.DeformPinoMenorPeca(falfa1, t2, d, beta, myd, valorFaxrk, valorFaxrkPrego);
+			rd6 = resultado.DeformPinoNasDuas(beta, myd, falfa1, d, valorFaxrk, valorFaxrkPrego);
 
 			Rdmin = rd1;
 			tipo = "Embutimento do pino metálico no elemento 1 de madeira.";
 			imagemFalha = "1.1.png";
+                        
 			if(rd2 < Rdmin || rd2 == Rdmin) {
 				Rdmin = rd2;
 				tipo = "Embutimento do pino metálico no elemento 2 de madeira.";
 				imagemFalha = "1.2.png";
-			} else if(rd3 < Rdmin) {
+			}
+                        if(rd3 < Rdmin) {
 				Rdmin = rd3;
 				tipo = "Embutimento do pino metálico nos dois elementos de madeira.";
 				imagemFalha = "1.3.png";
-			} else if(rd4 < Rdmin) {
+			}
+                        if(rd4 < Rdmin) {
 				Rdmin = rd4;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica no elemento 2 de madeira.";
 				imagemFalha = "1.4.png";
-			} else if(rd5 < Rdmin) {
+			}
+                        if(rd5 < Rdmin) {
 				Rdmin = rd5;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica no elemento 1 de madeira.";
 				imagemFalha = "1.5.png";
-			} else if(rd6 < Rdmin) {
+			}
+                        if(rd6 < Rdmin) {
 				Rdmin = rd6;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica nos dois elementos de madeira.";
 				imagemFalha = "1.6.png";
 			}
 
 			//Calcular o valor total da ligação
-			Rdlig = nparafusos * 1 * Rdmin;
+			Rdlig = nparafusos * nsecoes * Rdmin;
 			Rvd = ((Rdlig * kmod1 * kmod2 * kmod3) / 1.4);
-		} else if(modeloLigacao == ModeloLigacao.CORTE_DUPLO && modeloLigacao.getAngulo().getTipoAngulo() == Angulo.TipoAngulo.PARALELO) {
+                        
+		}
+                //CÁLCULO CORTE DUPLO E PARALELO
+                if(modeloLigacao == ModeloLigacao.CORTE_DUPLO && modeloLigacao.getAngulo().getTipoAngulo() == Angulo.TipoAngulo.PARALELO) {
 			DuasSecoesCorteParaleloController resultado = new DuasSecoesCorteParaleloController(); //Pegar os valores das outras classes
 
 			if(m) {
@@ -720,33 +762,39 @@ public class CalculoModeloLigacao {
 				valorFaxrkFinal = valorFaxrkPrego;
 			}
 
-			double Myd = resultado.ValorMyd(fuk, d);
+			myd = resultado.ValorMyd(fuk, d);
 			rd1 = resultado.EmbMenorPeca(fe0d1, t1, d);
 			rd2 = resultado.EmbMaiorPeca(fe0d1, t2, d, beta);
-			rd3 = resultado.DeformPinoMaiorPeca(fe0d1, t1, d, beta, Myd, valorFaxrk, valorFaxrkPrego);
-			rd4 = resultado.DeformPinoNasDuas(beta, Myd, fe0d1, d, valorFaxrk, valorFaxrkPrego);
+			rd3 = resultado.DeformPinoMaiorPeca(fe0d1, t1, d, beta, myd, valorFaxrk, valorFaxrkPrego);
+			rd4 = resultado.DeformPinoNasDuas(beta, myd, fe0d1, d, valorFaxrk, valorFaxrkPrego);
 
 			Rdmin = rd1;
 			tipo = "Embutimento do pino metálico no elemento 1 de madeira.";
 			imagemFalha = "2.1.png";
+                        
 			if(rd2 < Rdmin || rd2 == Rdmin) {
 				Rdmin = rd2;
 				tipo = "Embutimento do pino metálico no elemento 2 de madeira.";
 				imagemFalha = "2.2.png";
-			} else if(rd3 < Rdmin) {
+			}
+                        if(rd3 < Rdmin) {
 				Rdmin = rd3;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica no elemento 2 de madeira.";
 				imagemFalha = "2.3.png";
-			} else if(rd4 < Rdmin) {
+			}
+                        if(rd4 < Rdmin) {
 				Rdmin = rd4;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica nos dois elementos de madeira.";
 				imagemFalha = "2.4.png";
 			}
 
 			//Calcular o valor total da ligação
-			Rdlig = nparafusos * 2 * Rdmin;
+			Rdlig = nparafusos * nsecoes * Rdmin;
 			Rvd = ((Rdlig * kmod1 * kmod2 * kmod3) / 1.4);
-		} else if(modeloLigacao == ModeloLigacao.CORTE_DUPLO && modeloLigacao.getAngulo().getTipoAngulo() == Angulo.TipoAngulo.INCLINADO) {
+                        
+		}
+                //CÁLCULO PARA CORTE DUPLO E INCLINADO
+                if(modeloLigacao == ModeloLigacao.CORTE_DUPLO && modeloLigacao.getAngulo().getTipoAngulo() == Angulo.TipoAngulo.INCLINADO) {
 			DuasSecoesCorteInclinadaController resultado = new DuasSecoesCorteInclinadaController(); //Pegar os valores das outras classes
 
 			if(m) {
@@ -764,42 +812,50 @@ public class CalculoModeloLigacao {
 
 			if(IncSim1) {
 				falfa2 = ((fe0d2 * fe90d2) / ((fe0d2 * (Math.pow(Math.sin(angulo), 2))) + (fe90d2 * (Math.pow(Math.cos(angulo), 2)))));
-				falfa1 = fe0d1;
+				fe0d2 = falfa2;//gambiarra para printar valor certo
+                                falfa1 = fe0d1;
 			}
 			if(IncSim2) {
 				falfa1 = ((fe0d1 * fe90d1) / ((fe0d1 * (Math.pow(Math.sin(angulo), 2))) + (fe90d1 * (Math.pow(Math.cos(angulo), 2)))));
-				falfa2 = fe0d2;
+				fe0d1 = falfa1;
+                                falfa2 = fe0d2;
 			}
 
 			beta = falfa2 / falfa1;
 
-			double Myd = resultado.ValorMyd(fuk, d);
+			myd = resultado.ValorMyd(fuk, d);
 			rd1 = resultado.EmbMenorPeca(falfa1, t1, d);
 			rd2 = resultado.EmbMaiorPeca(falfa1, t2, d, beta);
-			rd3 = resultado.DeformPinoMaiorPeca(falfa1, t1, d, beta, Myd, valorFaxrk, valorFaxrkPrego);
-			rd4 = resultado.DeformPinoNasDuas(beta, Myd, falfa1, d, valorFaxrk, valorFaxrkPrego);
+			rd3 = resultado.DeformPinoMaiorPeca(falfa1, t1, d, beta, myd, valorFaxrk, valorFaxrkPrego);
+			rd4 = resultado.DeformPinoNasDuas(beta, myd, falfa1, d, valorFaxrk, valorFaxrkPrego);
 
 			Rdmin = rd1;
 			tipo = "Embutimento do pino metálico no elemento 1 de madeira.";
 			imagemFalha = "2.1.png";
+                        
 			if(rd2 < Rdmin || rd2 == Rdmin) {
 				Rdmin = rd2;
 				tipo = "Embutimento do pino metálico no elemento 2 de madeira.";
 				imagemFalha = "2.2.png";
-			} else if(rd3 < Rdmin) {
+			}
+                        if(rd3 < Rdmin) {
 				Rdmin = rd3;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica no elemento 2 de madeira.";
 				imagemFalha = "2.3.png";
-			} else if(rd4 < Rdmin) {
+			}
+                        if(rd4 < Rdmin) {
 				Rdmin = rd4;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica nos dois elementos de madeira.";
 				imagemFalha = "2.4.png";
 			}
 
 			//Calcular o valor total da ligação
-			Rdlig = nparafusos * 2 * Rdmin;
+			Rdlig = nparafusos * nsecoes * Rdmin;
 			Rvd = ((Rdlig * kmod1 * kmod2 * kmod3) / 1.4);
-		} else if(modeloLigacao == ModeloLigacao.CORTE_DUPLO && modeloLigacao.getAngulo().getTipoAngulo() == Angulo.TipoAngulo.PERPENDICULAR) {
+                        
+		}
+                //CÁLCULO PARA CORTE DUPLO E PERPENDICULAR
+                if(modeloLigacao == ModeloLigacao.CORTE_DUPLO && modeloLigacao.getAngulo().getTipoAngulo() == Angulo.TipoAngulo.PERPENDICULAR) {
 			DuasSecoesCortePerpendicularController resultado = new DuasSecoesCortePerpendicularController(); //Pegar os valores das outras classes
 
 			if(m) {
@@ -818,81 +874,68 @@ public class CalculoModeloLigacao {
 			if(IncSim1) {
 				falfa1 = fe0d1;
 				falfa2 = fe90d2;
+                                fe0d2 = falfa2;//gambiarra para printar valor certo
 			}
 			if(IncSim2) {
 				falfa2 = fe0d2;
 				falfa1 = fe90d1;
+                                fe0d1 = falfa1;//gambiarra para printar valor certo
 			}
 
 			beta = falfa2 / falfa1;
 
-			double Myd = resultado.ValorMyd(fuk, d);
+			myd = resultado.ValorMyd(fuk, d);
 			rd1 = resultado.EmbMenorPeca(falfa1, t1, d);
 			rd2 = resultado.EmbMaiorPeca(falfa1, t2, d, beta);
-			rd3 = resultado.DeformPinoMaiorPeca(falfa1, t1, d, beta, Myd, valorFaxrk, valorFaxrkPrego);
-			rd4 = resultado.DeformPinoNasDuas(beta, Myd, falfa1, d, valorFaxrk, valorFaxrkPrego);
+			rd3 = resultado.DeformPinoMaiorPeca(falfa1, t1, d, beta, myd, valorFaxrk, valorFaxrkPrego);
+			rd4 = resultado.DeformPinoNasDuas(beta, myd, falfa1, d, valorFaxrk, valorFaxrkPrego);
 
 			Rdmin = rd1;
 			tipo = "Embutimento do pino metálico no elemento 1 de madeira.";
 			imagemFalha = "2.1.png";
+                        
 			if(rd2 < Rdmin || rd2 == Rdmin) {
 				Rdmin = rd2;
 				tipo = "Embutimento do pino metálico no elemento 2 de madeira.";
 				imagemFalha = "2.2.png";
-			} else if(rd3 < Rdmin) {
+			}
+                        if(rd3 < Rdmin) {
 				Rdmin = rd3;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica no elemento 2 de madeira.";
 				imagemFalha = "2.3.png";
-			} else if(rd4 < Rdmin) {
+			}
+                        if(rd4 < Rdmin) {
 				Rdmin = rd4;
 				tipo = "Flexão do pino metálico com ocorrência de rótula plástica nos dois elementos de madeira.";
 				imagemFalha = "2.4.png";
 			}
 
 			//Calcular o valor total da ligação
-			Rdlig = nparafusos * 2 * Rdmin;
+			Rdlig = nparafusos * nsecoes* Rdmin;
 			Rvd = ((Rdlig * kmod1 * kmod2 * kmod3) / 1.4);
 		}
 	}
 
 	public void calcularModeloLigacaoAco(ModeloLigacao modeloLigacao, Boolean IncSim1, Boolean IncSim2, Boolean m) {
 		this.fc0k1 = modeloLigacao.getElementoLigacao1().getClasseMadeira().getfc0k();
-//		this.fc0k2 = modeloLigacao.getElementoLigacao2().getClasseMadeira().getfc0k();
 		this.fv0k1 = modeloLigacao.getElementoLigacao1().getClasseMadeira().getfv0k();
-//		this.fv0k2 = modeloLigacao.getElementoLigacao2().getClasseMadeira().getfv0k();
 		this.ec0m1 = modeloLigacao.getElementoLigacao1().getClasseMadeira().getec0m();
-//		this.ec0m2 = modeloLigacao.getElementoLigacao2().getClasseMadeira().getec0m();
 		this.t1 = modeloLigacao.getElementoLigacao1().getEspessura();
-		//		this.t2 = modeloLigacao.getElementoLigacao2().getEspessura();
+		this.t2 = modeloLigacao.getElementoLigacao2().getEspessuraChapaAco().getEspessura();
 		this.nsecoes = modeloLigacao.getNumSecao();
 		this.kmod1 = modeloLigacao.getKmod1().getValor();
 		this.kmod2 = modeloLigacao.getKmod2().getValor();
 		this.kmod3 = modeloLigacao.getKmod3().getValor();
-		this.npr = modeloLigacao.getConectores().getQuantidadeParafuso().getQtd();
-
-		if(npr > 8) {
-			nparafusos = (8.0 + ((2.0 / 3.0) * (npr - 8.0)));
-		} else {
-			nparafusos = npr;
-		}
-
+		this.nparafusos = modeloLigacao.getConectores().getQuantidadeParafuso().getQtd();
 		this.angulo = modeloLigacao.getAngulo().getValorRad();
 		this.d = modeloLigacao.getConectores().getTipoParafuso().getDiametro();
-		this.c = modeloLigacao.getConectores().getTipoParafuso().getComprimento();
 		this.fyk = modeloLigacao.getConectores().getClasseAcoParafuso().getFyk();
 		this.fuk = modeloLigacao.getConectores().getClasseAcoParafuso().getFuk();
-		this.alfa = 2.5;
-//		this.beta = fc0k2 / fc0k1;
+		this.alfa = modeloLigacao.getConectores().getTipoParafuso().getAlfa();
 		this.fe0d1 = fc0k1;
-//		this.fe0d2 = fc0k2;
 		this.fe90d1 = (0.25 * fe0d1 * alfa);
-//		this.fe90d2 = (0.25 * fe0d2 * alfa);
-
-		if(npr > 8) {
-			nparafusos = (8.0 + ((2.0 / 3.0) * (npr - 8.0)));
-		} else {
-			nparafusos = npr;
-		}
+                this.chapaFyk = modeloLigacao.getElementoLigacao2().getClasseAco().getFyk();
+                this.chapaFuk = modeloLigacao.getElementoLigacao2().getClasseAco().getFuk();
 
 		if(modeloLigacao.getConectores().getTipoArruela() != null) {
 			d1 = modeloLigacao.getConectores().getTipoArruela().getD1();
@@ -905,6 +948,7 @@ public class CalculoModeloLigacao {
 		double fek90 = (0.25 * fc0k1 * alfa);
 		double fekalfa = ((fc0k1 * fek90) / ((fc0k1 * (Math.pow((Math.sin(angulo)), 2))) + ((fek90 * (Math.pow((Math.cos(angulo)), 2))))));
 		double fek = 0.0;
+                
 		if(angulo == 0) {
 			fek = fc0k1;
 		}
@@ -919,14 +963,16 @@ public class CalculoModeloLigacao {
 		boolean fina = false;
 		boolean grossa = false;
 		boolean indefinida = false;
+                
 		if(t2 <= (0.5 * d)) {
 			fina = true;
 		} else if(t2 >= d) {
-			indefinida = true;
+			grossa = true;
 		} else if(t2 > (0.5 * d) && t2 < d) {
 			indefinida = true;
 		}
 
+                //CÁLCULO CORTE SIMPLES E CHAPA FINA
 		if(modeloLigacao == ModeloLigacao.CORTE_SIMPLES && fina) {
 			UmaSecaoCorteFinaController resultado = new UmaSecaoCorteFinaController();//Pegar os valores das outras classes
 			//Considerar ou não o valor de FaxRk
@@ -935,16 +981,17 @@ public class CalculoModeloLigacao {
 			}
 
 			double Myk = resultado.ValorMyk(fuk, d);
-			fv0k1 = resultado.EmbPecaMadeira(fek, t1, d);
-			fv0k2 = resultado.DeformPinoPecaMadeira(fek, d, Myk, valorFaxrk);
+			fvk1 = resultado.EmbPecaMadeira(fek, t1, d);
+			fvk2 = resultado.DeformPinoPecaMadeira(fek, d, Myk, valorFaxrk);
 
 			//Verificar o menor valor de resistência
-			fvkmin = fv0k1;
+			fvkmin = fvk1;
 
 			tipo = "Embutimento do pino metálico no elemento de madeira.";
 			imagemFalha = "UmaSecaoEmbutimentoMadeira.png";
-			if(fv0k2 < fvkmin) {
-				fvkmin = fv0k2;
+                        
+			if(fvk2 < fvkmin) {
+				fvkmin = fvk2;
 				tipo = "Flexão do pino metálico com ocorrência de uma rótula plástica no elemento de madeira.";
 				imagemFalha = "UmaSecaoFlexaoPinoMadeira.png";
 			}
@@ -953,9 +1000,13 @@ public class CalculoModeloLigacao {
 			relatorioChapaAco = "Ligação com chapa fina.";
 
 			//Calcular o valor total da ligação
-			Rdlig = fvkmin * 1 * nparafusos;
+			Rdlig = fvkmin * nsecoes * nparafusos;
 			Rvd = ((Rdlig * kmod1 * kmod2 * kmod3) / 1.4);
-		} else if(modeloLigacao == ModeloLigacao.CORTE_SIMPLES && grossa) {
+                        
+                        
+		}
+                //CÁLCULO CORTE SIMPLES E CHAPA GROSSA
+                if(modeloLigacao == ModeloLigacao.CORTE_SIMPLES && grossa) {
 			UmaSecaoCorteGrossaController resultado = new UmaSecaoCorteGrossaController();//Pegar os valores das outras classes
 
 			if(m) {
@@ -963,19 +1014,21 @@ public class CalculoModeloLigacao {
 			}
 
 			double Myk = resultado.ValorMyk(fuk, d);
-			double fvk3 = resultado.EmbPecaMadeira(fek, d, t1, valorFaxrk, Myk);
-			double fvk4 = resultado.DeformPino(fek, d, Myk, valorFaxrk);
-			double fvk5 = resultado.EmbPecaMadeira5(fek, t1, d);
+			fvk3 = resultado.EmbPecaMadeira(fek, d, t1, valorFaxrk, Myk);
+			fvk4 = resultado.DeformPino(fek, d, Myk, valorFaxrk);
+			fvk5 = resultado.EmbPecaMadeira5(fek, t1, d);
 
 			//Verificar o menor valor de resistência
 			fvkmin = fvk3;
 			tipo = "Flexão do pino metálico com ocorrência de uma rótula plástica no elemento de madeira.";
 			imagemFalha = "UmaSecaoFlexaoPinoAco.png";
+                        
 			if(fvk4 < fvkmin) {
 				fvkmin = fvk4;
 				tipo = "Flexão do pino metálico com ocorrência de duas rótulas plásticas no elemento de madeira.";
 				imagemFalha = "UmaSecaoDuasFlexoesPino.png";
-			} else if(fvk5 < fvkmin) {
+			}
+                        if(fvk5 < fvkmin) {
 				fvkmin = fvk5;
 				tipo = "Embutimento do pino metálico no elemento de madeira.";
 				imagemFalha = "UmaSecaoEmbutimentoMadeiraGrossa.png";
@@ -984,9 +1037,11 @@ public class CalculoModeloLigacao {
 			espessuraChapa = "Ligação com chapa grossa.";
 			relatorioChapaAco = "Ligação com chapa grossa.";
 
-			Rdlig = fvkmin * 1 * nparafusos;
+			Rdlig = fvkmin *nsecoes* nparafusos;
 			Rvd = ((Rdlig * kmod1 * kmod2 * kmod3) / 1.4);
 		}
+                
+                //CÁLCULO CORTE DUPLO E CHAPA DE AÇO CENTRAL
 		if(modeloLigacao == ModeloLigacao.CORTE_DUPLO_MADEIRA_ACO_MADEIRA) {
 			DuasSecoesChapaCentralController resultado = new DuasSecoesChapaCentralController();//Pegar os valores das outras classes
 
@@ -995,27 +1050,32 @@ public class CalculoModeloLigacao {
 			}
 
 			double Myk = resultado.ValorMyk(fuk, d);
-			double fvk6 = resultado.EmbMadeira(fek, t1, d);
-			double fvk7 = resultado.DeformUmaRotula(fek, d, t1, valorFaxrk, Myk);
-			double fvk8 = resultado.DeformDuasRotulas(fek, d, Myk, valorFaxrk);
+			fvk6 = resultado.EmbMadeira(fek, t1, d);
+			fvk7 = resultado.DeformUmaRotula(fek, d, t1, valorFaxrk, Myk);
+			fvk8 = resultado.DeformDuasRotulas(fek, d, Myk, valorFaxrk);
 
 			fvkmin = fvk6;
 			tipo = "Embutimento do pino metálico nos elementos de madeira.";
 			imagemFalha = "DuasSecoesEmbutimentoMadeiraMam.png";
+                        
 			if(fvk7 < fvkmin) {
 				fvkmin = fvk7;
 				tipo = "Flexão dos pinos metálicos com uma rótula plástica no elemento de aço.";
 				imagemFalha = "DuasSecoesFlexaoPinoAcoMam.png";
-			} else if(fvk8 < fvkmin) {
+			}
+                        if(fvk8 < fvkmin) {
 				fvkmin = fvk8;
 				tipo = "Flexão dos pinos metálicos com duas rótulas plásticas nos elementos de madeira.";
 				imagemFalha = "DuasSecoesFlexaoDuplaPinoMam.png";
 			}
 
 			//Calcular o valor total da ligação
-			Rdlig = fvkmin * 2 * nparafusos;
+			Rdlig = fvkmin *nsecoes* nparafusos;
 			Rvd = ((Rdlig * kmod1 * kmod2 * kmod3) / 1.4);
-		} else if(modeloLigacao == ModeloLigacao.CORTE_DUPLO_ACO_MADEIRA_ACO && fina) {
+     
+		}
+                //CÁLCULO CORTE DUPLO E CHAPA DA AÇO LATERAL FINA
+                if(modeloLigacao == ModeloLigacao.CORTE_DUPLO_ACO_MADEIRA_ACO && fina) {
 			DuasSecoesChapaFinaLateralController resultado = new DuasSecoesChapaFinaLateralController(); //Pegar os valores das outras classes
 
 			if(m) {
@@ -1023,12 +1083,13 @@ public class CalculoModeloLigacao {
 			}
 
 			double Myk = resultado.ValorMyk(fuk, d);
-			double fvk9 = resultado.EmbMadeira(fek, t1, d);
-			double fvk10 = resultado.DeformUmaRotula(fek, d, Myk, valorFaxrk);
+			fvk9 = resultado.EmbMadeira(fek, t1, d);
+			fvk10 = resultado.DeformUmaRotula(fek, d, Myk, valorFaxrk);
 
 			fvkmin = fvk9;
 			tipo = "Embutimento do pino metálico no elemento de madeira.";
 			imagemFalha = "DuasSecoesEmbutimentoMadeiraAma.png";
+                        
 			if(fvk10 < fvkmin) {
 				fvkmin = fvk10;
 				tipo = "Flexão dos pinos metálicos com duas rótulas plásticas nos elementos de aço.";
@@ -1039,9 +1100,12 @@ public class CalculoModeloLigacao {
 			relatorioChapaAco = "Ligação com chapa fina";
 
 			//Calcular o valor total da ligação
-			Rdlig = fvkmin * 2 * nparafusos;
+			Rdlig = fvkmin *nsecoes* nparafusos;
 			Rvd = ((Rdlig * kmod1 * kmod2 * kmod3) / 1.4);
-		} else if(modeloLigacao == ModeloLigacao.CORTE_DUPLO_ACO_MADEIRA_ACO && grossa) {
+                        
+		} 
+                //CÁLCULO CORTE DUPLO E CHAPA DA AÇO LATERAL GROSSA
+                if(modeloLigacao == ModeloLigacao.CORTE_DUPLO_ACO_MADEIRA_ACO && grossa) {
 			DuasSecoesChapaGrossaLateralController resultado = new DuasSecoesChapaGrossaLateralController(); //Pegar os valores das outras classes
 
 			if(m) {
@@ -1049,13 +1113,14 @@ public class CalculoModeloLigacao {
 			}
 
 			double Myk = resultado.ValorMyk(fuk, d);
-			double fvk11 = resultado.EmbMadeira(fek, t1, d);
-			double fvk12 = resultado.DeformDuasRotulas(fek, d, Myk, valorFaxrk);
+			fvk11 = resultado.EmbMadeira(fek, t1, d);
+			fvk12 = resultado.DeformDuasRotulas(fek, d, Myk, valorFaxrk);
 
 			//Verificar o menor valor de resistência
 			fvkmin = fvk11;
 			tipo = "Embutimento do pino metálico no elemento de madeira.";
 			imagemFalha = "DuasSecoesEmbutimentoMadeiraAma.png";
+                        
 			if(fvk12 < fvkmin) {
 				fvkmin = fvk12;
 				tipo = "Flexão dos pinos metálicos com duas rótulas plásticas no elemento de madeira.";
@@ -1068,7 +1133,10 @@ public class CalculoModeloLigacao {
 			//Calcular o valor total da ligação
 			Rdlig = fvkmin * 2 * nparafusos;
 			Rvd = ((Rdlig * kmod1 * kmod2 * kmod3) / 1.4);
-		} else if(modeloLigacao == ModeloLigacao.CORTE_SIMPLES && indefinida) {
+                        
+		}
+                //CÁLCULO CORTE SIMPLES E INDEFINIDA
+                if(modeloLigacao == ModeloLigacao.CORTE_SIMPLES && indefinida) {
 			relatorioChapaAco = "Cálculo realizado com interpolação linear.";
 
 			UmaSecaoCorteFinaController resultado = new UmaSecaoCorteFinaController();//Pegar os valores das outras classes
@@ -1078,14 +1146,15 @@ public class CalculoModeloLigacao {
 			}
 
 			double Myk = resultado.ValorMyk(fuk, d);
-			fv0k1 = resultado.EmbPecaMadeira(fek, t1, d);
-			fv0k2 = resultado.DeformPinoPecaMadeira(fek, d, Myk, valorFaxrk);
+			fvk1 = resultado.EmbPecaMadeira(fek, t1, d);
+			fvk2 = resultado.DeformPinoPecaMadeira(fek, d, Myk, valorFaxrk);
 
 			//Verificar o menor valor de resistência
-			fvkmin = fv0k1;
+			fvkmin = fvk1;
 			tipo = "Embutimento do pino metálico no elemento de madeira.";
 			imagemFalha = "UmaSecaoEmbutimentoMadeira.png";
-			if(fv0k2 < fvkmin) {
+                        
+			if(fvk2 < fvkmin) {
 				fvkmin = fv0k2;
 				tipo = "Flexão do pino metálico com ocorrência de uma rótula plástica no elemento de madeira.";
 				imagemFalha = "UmaSecaoFlexaoPinoMadeira.png";
@@ -1098,19 +1167,21 @@ public class CalculoModeloLigacao {
 				valorFaxrk = resultado.ValorFaxrk(d, fuk);
 			}
 
-			double fvk3 = resultado2.EmbPecaMadeira(fek, d, t1, valorFaxrk, Myk);
-			double fvk4 = resultado2.DeformPino(fek, d, Myk, valorFaxrk);
-			double fvk5 = resultado2.EmbPecaMadeira5(fek, t1, d);
+			fvk3 = resultado2.EmbPecaMadeira(fek, d, t1, valorFaxrk, Myk);
+			fvk4 = resultado2.DeformPino(fek, d, Myk, valorFaxrk);
+			fvk5 = resultado2.EmbPecaMadeira5(fek, t1, d);
 
 			//Verificar o menor valor de resistência
 			double fvkmin2 = fvk3;
 			String tipogrossa = "Flexão do pino metálico com ocorrência de uma rótula plástica no elemento de madeira.";
 			String imagemFalha2 = "UmaSecaoFlexaoPinoAco.png";
+                        
 			if(fvk4 < fvkmin2) {
 				fvkmin2 = fvk4;
 				tipogrossa = "Flexão do pino metálico com ocorrência de duas rótulas plásticas no elemento de madeira.";
 				imagemFalha2 = "UmaSecaoDuasFlexoesPino.png";
-			} else if(fvk5 < fvkmin2) {
+			}
+                        if(fvk5 < fvkmin2) {
 				fvkmin2 = fvk5;
 				tipogrossa = "Embutimento do pino metálico no elemento de madeira.";
 				imagemFalha2 = "UmaSecaoEmbutimentoMadeiraGrossa.png";
@@ -1146,7 +1217,8 @@ public class CalculoModeloLigacao {
 				if(fvkfinal < (fvkMinimo + fvkmedio)) {
 					tipo = tipoMinimo;
 					imagemFalha = imagemMinima;
-				} else if(fvkfinal > (fvkMinimo + fvkmedio)) {
+				}
+                                if(fvkfinal > (fvkMinimo + fvkmedio)) {
 					tipo = tipoMaximo;
 					imagemFalha = imagemMaxima;
 				}
@@ -1159,9 +1231,12 @@ public class CalculoModeloLigacao {
 
 			fvkmin = fvkfinal;
 
-			Rdlig = fvkmin * 1 * nparafusos;
+			Rdlig = fvkmin *nsecoes* nparafusos;
 			Rvd = ((Rdlig * kmod1 * kmod2 * kmod3) / 1.4);
-		} else if(modeloLigacao == ModeloLigacao.CORTE_DUPLO_ACO_MADEIRA_ACO && indefinida) {
+                        
+		}
+                //CÁLCULO CORTE DUPLO E CHAPA DA AÇO LATERAL indefinida
+                if(modeloLigacao == ModeloLigacao.CORTE_DUPLO_ACO_MADEIRA_ACO && indefinida) {
 			relatorioChapaAco = "Cálculo realizado com interpolação linear";
 
 			DuasSecoesChapaFinaLateralController resultado = new DuasSecoesChapaFinaLateralController(); //Pegar os valores das outras classes
@@ -1172,13 +1247,14 @@ public class CalculoModeloLigacao {
 
 			//double FaxRk = resultado.ValorFaxrk(d, fyk, d2, d1, fe0d1);
 			double Myk = resultado.ValorMyk(fuk, d);
-			double fvk9 = resultado.EmbMadeira(fek, t1, d);
-			double fvk10 = resultado.DeformUmaRotula(fek, d, Myk, valorFaxrk);
+			fvk9 = resultado.EmbMadeira(fek, t1, d);
+			fvk10 = resultado.DeformUmaRotula(fek, d, Myk, valorFaxrk);
 
 			//Verificar o menor valor de resistência
 			fvkmin = fvk9;
 			tipo = "Embutimento do pino metálico no elemento de madeira.";
 			imagemFalha = "DuasSecoesEmbutimentoMadeiraAma.png";
+                        
 			if(fvk10 < fvkmin) {
 				fvkmin = fvk10;
 				tipo = "Flexão dos pinos metálicos com uma rótula plástica no elemento de madeira.";
@@ -1192,13 +1268,14 @@ public class CalculoModeloLigacao {
 				valorFaxrk = resultado.ValorFaxrk(d, fuk);
 			}
 
-			double fvk11 = resultado2.EmbMadeira(fek, t1, d);
-			double fvk12 = resultado2.DeformDuasRotulas(fek, d, Myk, valorFaxrk);
+			fvk11 = resultado2.EmbMadeira(fek, t1, d);
+			fvk12 = resultado2.DeformDuasRotulas(fek, d, Myk, valorFaxrk);
 
 			//Verificar o menor valor de resistência
 			double fvkmin2 = fvk11;
 			String tipogrossa = "Embutimento do pino metálico no elemento de madeira.";
 			String imagemFalha2 = "DuasSecoesEmbutimentoMadeiraAma.png";
+                        
 			if(fvk12 < fvkmin2) {
 				fvkmin2 = fvk12;
 				tipogrossa = "Flexão dos pinos metálicos com duas rótulas plásticas no elemento de madeira.";
@@ -1250,7 +1327,7 @@ public class CalculoModeloLigacao {
 			fvkmin = fvkfinal;
 
 			//Calcular o valor total da ligação
-			Rdlig = fvkmin * 2 * nparafusos;
+			Rdlig = fvkmin *nsecoes* nparafusos;
 			Rvd = ((Rdlig * kmod1 * kmod2 * kmod3) / 1.4);
 		}
 

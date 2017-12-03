@@ -126,7 +126,7 @@ public class AjudaNovo extends javax.swing.JFrame {
 		//let's try to open PDF file
 		String basePath = new File("").getAbsolutePath();
 		System.out.println(basePath + "<-ESSE É O CAMINHO PARA O PROJETO");
-		File file = new File(basePath + "\\ajuda/ManualUsuario.pdf");
+		File file = new File(basePath + "\\ajuda/Manual.pdf");
 		if(file.exists()) {
 
 			try {

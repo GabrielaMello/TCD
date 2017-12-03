@@ -15,8 +15,8 @@ public enum ClasseAco {
 	ASTM_A36("ASTM A36", 250, 500);
 
 	private String nome;
-	private Integer fyk;
-	private Integer fuk;
+	private int fyk;
+	private int fuk;
 
 	private ClasseAco(String nome, Integer fyk, Integer fuk) {
 		this.nome = nome;
@@ -28,7 +28,7 @@ public enum ClasseAco {
 		return nome;
 	}
 
-	public void setNome(String nome) {
+	public void setNome() {
 		this.nome = nome;
 	}
 
