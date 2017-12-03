@@ -19,8 +19,8 @@ public enum ModeloLigacao {
 	CORTE_SIMPLES(1),
 	CORTE_DUPLO(2),
 	DUPLO_CORTE_SIMPLES(1),
-	CORTE_DUPLO_ACO_MADEIRA_ACO(3),
-	CORTE_DUPLO_MADEIRA_ACO_MADEIRA(4);
+	CORTE_DUPLO_ACO_MADEIRA_ACO(2),
+	CORTE_DUPLO_MADEIRA_ACO_MADEIRA(2);
 
 	private ModeloLigacao(int numSecao) {
 		this.numSecao = numSecao;
