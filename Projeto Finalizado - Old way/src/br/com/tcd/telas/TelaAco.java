@@ -2167,7 +2167,7 @@ public class TelaAco extends javax.swing.JFrame implements ModeloLigacaoProvider
 		try {
 			if(((Verificador)comboTipoParafuso.getInputVerifier()).verify(comboTipoParafuso)) {
 				valorDiametro.setText(modeloLigacao.getConectores().getTipoParafuso().getDiametro().toString());
-				valorArea.setText(modeloLigacao.getConectores().getTipoParafuso().getComprimento().toString());
+				valorArea.setText(modeloLigacao.getConectores().getTipoParafuso().getArea().toString());
 			}
 
 			atualizanextElementosLigacao();
@@ -2302,23 +2302,9 @@ public class TelaAco extends javax.swing.JFrame implements ModeloLigacaoProvider
 					for(TipoParafuso tipoParafuso : TipoParafuso.values()) {
 						boolean passou = false;
 
-						if(tipoParafuso.getDiametro() < (t1 / 5)) {
-							entrouDiametro = true;
-							double tp;
-							switch(modeloLigacao){
-								case CORTE_SIMPLES:
-									tp = tipoParafuso.getComprimento() - t1;
-									if(tp >= 12 * tipoParafuso.getDiametro()) {
-										passou = true;
-									}
-									break;
-								default:
-									tp = tipoParafuso.getComprimento() - (t1 + t2);
-									if(tp >= 12 * tipoParafuso.getDiametro()) {
-										passou = true;
-									}
-									break;
-							}
+						if(tipoParafuso.getDiametro() < (t1 / 2)) {
+							passou = true;
+							
 						}
 
 						if(passou) {
@@ -2416,7 +2402,7 @@ public class TelaAco extends javax.swing.JFrame implements ModeloLigacaoProvider
 		}
 	}//GEN-LAST:event_ComboTipoChapaAcoActionPerformed
 
-	private void comboChapaAcoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComboChapaAcoActionPerformed
+	private void comboChapaAcoActionPerformed(java.awt.event.ActionEvent evt) {                                              
 		try {
 			if(((Verificador)comboChapaAco.getInputVerifier()).verify(comboChapaAco)) {
 				relatorioChapaEspessura.setText(modeloLigacao.getChapaAco().getEspessuraChapaAco().getNome());
