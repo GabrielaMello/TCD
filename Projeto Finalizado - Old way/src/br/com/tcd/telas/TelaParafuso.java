@@ -2193,23 +2193,9 @@ public class TelaParafuso extends javax.swing.JFrame implements ModeloLigacaoPro
 					for(TipoParafuso tipoParafuso : TipoParafuso.values()) {
 						boolean passou = false;
 
-						if(tipoParafuso.getDiametro() < (t1 / 5)) {
-							entrouDiametro = true;
-							double tp;
-							switch(modeloLigacao){
-								case CORTE_SIMPLES:
-									tp = tipoParafuso.getComprimento() - t1;
-									if(tp >= 12 * tipoParafuso.getDiametro()) {
-										passou = true;
-									}
-									break;
-								case CORTE_DUPLO:
-									tp = tipoParafuso.getComprimento() - (t1 + t2);
-									if(tp >= 12 * tipoParafuso.getDiametro()) {
-										passou = true;
-									}
-									break;
-							}
+						if(tipoParafuso.getDiametro() < (t1 / 2)) {
+							passou = true;
+							
 						}
 
 						if(passou) {
@@ -2304,7 +2290,9 @@ public class TelaParafuso extends javax.swing.JFrame implements ModeloLigacaoPro
 				data.setText(objDataHora.MostraData());
 				hora.setText(objDataHora.MostraHora());
 
-				relatorioFc0d1.setText(String.format("%.1f", calculoModeloLigacao.getFe0d1()));
+				relatorioTipoParafuso.setText(modeloLigacao.getConectores().getTipoParafuso().getNome());
+                                relatorioDiametro.setText(String.format("%.1f", modeloLigacao.getConectores().getTipoParafuso().getDiametro()));
+                                relatorioFc0d1.setText(String.format("%.1f", calculoModeloLigacao.getFe0d1()));
 				relatorioFc0d2.setText(String.format("%.1f", calculoModeloLigacao.getFe0d2()));
 				relatorioRd1.setText(String.format("%.0f", calculoModeloLigacao.getRd1()));
 				relatorioRd2.setText(String.format("%.0f", calculoModeloLigacao.getRd2()));
@@ -2375,6 +2363,8 @@ public class TelaParafuso extends javax.swing.JFrame implements ModeloLigacaoPro
 					relatorioRd24.setVisible(true);
 					inclinado1.setVisible(false);
 					inclinado2.setVisible(false);
+                                        relatorioRd5.setText(String.format("%.0f", calculoModeloLigacao.getRd3()));
+                                        relatorioRd6.setText(String.format("%.0f", calculoModeloLigacao.getRd4()));
 				} else if(modeloLigacao == ModeloLigacao.CORTE_DUPLO && modeloLigacao.getAngulo().getTipoAngulo() == Angulo.TipoAngulo.INCLINADO) {
 					jScrollPane2.setVisible(true);
 					relatorioRd13.setVisible(false);
@@ -2387,6 +2377,8 @@ public class TelaParafuso extends javax.swing.JFrame implements ModeloLigacaoPro
 					relatorioRd16.setVisible(false);
 					relatorioRd23.setVisible(true);
 					relatorioRd24.setVisible(true);
+                                        relatorioRd5.setText(String.format("%.0f", calculoModeloLigacao.getRd3()));
+                                        relatorioRd6.setText(String.format("%.0f", calculoModeloLigacao.getRd4()));
 				} else if(modeloLigacao == ModeloLigacao.CORTE_DUPLO && modeloLigacao.getAngulo().getTipoAngulo() == Angulo.TipoAngulo.PERPENDICULAR) {
 					jScrollPane2.setVisible(true);
 					relatorioRd13.setVisible(false);
@@ -2399,6 +2391,8 @@ public class TelaParafuso extends javax.swing.JFrame implements ModeloLigacaoPro
 					relatorioRd16.setVisible(false);
 					relatorioRd23.setVisible(true);
 					relatorioRd24.setVisible(true);
+                                        relatorioRd5.setText(String.format("%.0f", calculoModeloLigacao.getRd3()));
+                                        relatorioRd6.setText(String.format("%.0f", calculoModeloLigacao.getRd4()));
 				}
 
 				//COM ESSAS FUNÇÕES ALTERAM-SE AS IMAGENS DO RELATÓRIO
@@ -2509,7 +2503,7 @@ public class TelaParafuso extends javax.swing.JFrame implements ModeloLigacaoPro
 		try {
 			if(((Verificador)comboTipoParafuso.getInputVerifier()).verify(comboTipoParafuso)) {
 				valorDiametro.setText(modeloLigacao.getConectores().getTipoParafuso().getDiametro().toString());
-				valorArea.setText(modeloLigacao.getConectores().getTipoParafuso().getComprimento().toString());
+				valorArea.setText(modeloLigacao.getConectores().getTipoParafuso().getArea().toString());
 			}
 
 			atualizanextElementosLigacao();
@@ -2633,8 +2627,8 @@ public class TelaParafuso extends javax.swing.JFrame implements ModeloLigacaoPro
 
 	private void inclinacaoSim2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InclinacaoSim2ActionPerformed
 		try {
-			incSim1 = true;
-			incSim2 = false;
+			incSim1 = false;
+			incSim2 = true;
 
 			madeiraFigura.setVisible(true);
 			String TrocaFigura = "";
